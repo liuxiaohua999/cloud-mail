@@ -122,6 +122,7 @@ const userService = {
 		num = (num - 1) * size;
 
 		const conditions = [];
+		console.log("初始conditions =", conditions);
 
 		if (status > -1) {
 			conditions.push(eq(user.status, status));
@@ -130,6 +131,7 @@ const userService = {
 
 
 		if (email) {
+			console.log("after email conditions =", conditions);
 			conditions.push(sql`${user.email} COLLATE NOCASE LIKE ${'%'+ email + '%'}`);
 		}
 
@@ -154,6 +156,8 @@ const userService = {
 		} else {
 			query.orderBy(desc(user.userId));
 		}
+
+		console.log("final conditions =", conditions);
 
 		const list = await query.limit(size).offset(num);
 
