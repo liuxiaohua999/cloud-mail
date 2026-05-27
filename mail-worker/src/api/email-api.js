@@ -40,13 +40,11 @@ app.put('/email/read', async (c) => {
 })
 
 console.log("准备加载物理删除")
-export default function emailApi(app) {
-    app.delete('/email/physicsDelete', async (c) => {
-        const body = await c.req.json()
-        await emailService.physicsDelete(c, body)
-        return c.json(result.ok())
-    })
-}
+app.delete('/email/physicsDelete', async (c) => {
+	const body = await c.req.json()
+	await emailService.physicsDelete(c, body)
+	return c.json(result.ok())
+})
 
 console.log("加载物理删除完毕")
 
