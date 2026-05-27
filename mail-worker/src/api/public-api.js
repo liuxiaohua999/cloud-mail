@@ -24,17 +24,9 @@ app.post('/public/addUser', async (c) => {
 
 // 新增以下代码（物理删除邮件的公开API）
 app.post('/public/physicsDeleteEmail', async (c) => {
-	// app.post：注册HTTP POST路由，路径是/public/physicsDeleteEmail，和项目其他路由风格统一
 	const params = await c.req.json();
-	// 从请求体解析JSON，期望格式{"emailIds":"1,2,3"}
-	const token = c.req.header('Authorization');
-	// 从请求头获取Authorization字段
-	if (!token) {
-	// 如果没有token则返回失败
-	return c.json(result.fail("缺少Authorization头"));
-	}
+	// 该方法会删除数据库记录、R2附件和star关联
 	await emailService.physicsDelete(c, params);
-	// 调用物理删除函数，真正从数据库删除邮件记录、清理R2附件和star关联
+	// result.ok()：包装成功结果
 	return c.json(result.ok());
-	// 返回成功响应
 });
