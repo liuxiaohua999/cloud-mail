@@ -1,8 +1,13 @@
+
+console.log("文件EMAIL-API被加载")
+
 import app from '../hono/hono';
 import emailService from '../service/email-service';
 import result from '../model/result';
 import userContext from '../security/user-context';
 import attService from '../service/att-service';
+
+
 
 app.get('/email/list', async (c) => {
 	const data = await emailService.list(c, c.req.query(), userContext.getUserId(c));
@@ -34,8 +39,13 @@ app.put('/email/read', async (c) => {
 	return c.json(result.ok());
 })
 
+console.log("准备加载物理删除")
 app.delete('/email/physicsDelete', async (c) => {
     const body = await c.req.json()
     await emailService.physicsDelete(c,body)
     return c.json(result.ok())
 })
+
+console.log("加载物理删除完毕")
+
+
