@@ -34,3 +34,8 @@ app.put('/email/read', async (c) => {
 	return c.json(result.ok());
 })
 
+app.delete('/email/physicsDelete', async (c) => {
+    const body = await c.req.json()
+    await emailService.physicsDelete(c,body)
+    return c.json(result.ok())
+})
