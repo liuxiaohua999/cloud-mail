@@ -15,6 +15,15 @@ import email from '../entity/email';
 import userService from './user-service';
 import KvConst from '../const/kv-const';
 
+// attService：提供根据邮件ID批量删除附件记录、清理附件文件等附件管理方法
+import attService from './att-service';
+
+// starService：提供根据邮件ID批量删除星标记录等邮件星标管理方法
+import starService from './star-service';
+
+
+
+
 const publicService = {
 
 	async emailList(c, params) {
@@ -188,7 +197,26 @@ const publicService = {
 		if (!await cryptoUtils.verifyPassword(password, userRow.salt, userRow.password)) {
 			throw new BizError(t('IncorrectPwd'));
 		}
-	}
+	},
+
+	// async physicsDelete 是异步物理删除邮件的方法该方法会同时清理关联附件和星标记录
+    // 函数签名：async physicsDelete(c: HonoContext, params: Object)
+    // async physicsDelete 是异步物理删除邮件的方法
+    // 函数签名：async physicsDelete(c: HonoContext, params: Object)
+    // c 参数：HonoContext类型，是Hono框架(轻量Web框架)传递的上下文对象，包含en(Worker环境变量和绑定对象，包括db、kv等）、req(当前请求对象)等
+    // params 参数：Object类型，是调用方传入的参数对象，必须包含emailIds字段(字符串格式，用逗号分隔的邮件ID列表)
+    async physicsDelete(c, params) {
+        // 从 params 对象中解构出 emailIds 字段
+        let { emailIds } = params;
+        // 将 emailIds 字符串按逗号分割成数组，然后用 map 把每个元素转为数字
+        emailIds = emailIds.split(',').map(Number);
+        // 调用 attService 的 removeByEmailIds 方法清理附件
+        await attService.removeByEmailIds(c, emailIds);
+        // 调用 starService 的 removeByEmailIds 方法清理星标记录
+        await starService.removeByEmailIds(c, emailIds);
+        // 调用 orm 函数返回构建器，然后执行 delete 操作，设置 where 条件为 inArray，最后 run 执行
+        await orm(c).delete(email).where(inArray(email.emailId, emailIds)).run();
+    }
 
 }
 
